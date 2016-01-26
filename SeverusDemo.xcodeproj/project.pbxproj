@@ -66,7 +66,7 @@
 		C966E7DF1C574BED00206B18 /* NSObject+Builder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Builder.m"; sourceTree = "<group>"; };
 		C966E7E31C574BED00206B18 /* UIViewController+NavigationWithBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+NavigationWithBuilder.h"; sourceTree = "<group>"; };
 		C966E7E41C574BED00206B18 /* UIViewController+NavigationWithBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+NavigationWithBuilder.m"; sourceTree = "<group>"; };
-		C966E7E71C574DFC00206B18 /* PSSTableViewCellProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSSTableViewCellProtocol.h; sourceTree = "<group>"; };
+		C966E7E71C574DFC00206B18 /* PSSReusableViewPotocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSSReusableViewPotocol.h; sourceTree = "<group>"; };
 		C966E7E81C574DFC00206B18 /* PSSTableViewProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSSTableViewProtocol.h; sourceTree = "<group>"; };
 		C966E7E91C574DFC00206B18 /* PSSTableViewProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSSTableViewProtocol.m; sourceTree = "<group>"; };
 		C966E7EB1C574EFD00206B18 /* ChainStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChainStyle.h; sourceTree = "<group>"; };
@@ -217,7 +217,7 @@
 		C966E7E01C574BED00206B18 /* PSSTableViewProtocol */ = {
 			isa = PBXGroup;
 			children = (
-				C966E7E71C574DFC00206B18 /* PSSTableViewCellProtocol.h */,
+				C966E7E71C574DFC00206B18 /* PSSReusableViewPotocol.h */,
 				C966E7E81C574DFC00206B18 /* PSSTableViewProtocol.h */,
 				C966E7E91C574DFC00206B18 /* PSSTableViewProtocol.m */,
 			);

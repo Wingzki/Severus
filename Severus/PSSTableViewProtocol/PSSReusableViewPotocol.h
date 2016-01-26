@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol PSSTableViewCellProtocol <NSObject>
+@protocol PSSReusableViewPotocol <NSObject>
 
 - (void)bindingData:(id)dataModel;
 

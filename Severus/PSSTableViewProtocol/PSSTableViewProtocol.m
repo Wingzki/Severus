@@ -1,6 +1,6 @@
 //
 //  PSSTableViewProtocol.m
-//  Severus
+//  PSSTableViewProtocol
 //
 //  Created by Dai Qinfu on 16/1/21.
 //  Copyright © 2016年 Wingzki. All rights reserved.
@@ -8,8 +8,10 @@
 
 #import "PSSTableViewProtocol.h"
 
-static const NSString *kRandomAlphabet = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-static NSString * const kNormalCell    = @"kNormalCell";
+#define MINFLOAT 0.0001;
+
+static NSString * const kRandomAlphabet = @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+static NSString * const kNormalCell     = @"kNormalCell";
 
 @interface PSSTableViewProtocol ()
 
@@ -52,10 +54,11 @@ static NSString * const kNormalCell    = @"kNormalCell";
     
 }
 
-- (void)registerCell:(Class <PSSTableViewCellProtocol> )cellClass
+- (void)registerCell:(Class <PSSReusableViewPotocol> )cellClass
          onTableView:(UITableView *)tableView
-              filter:(CellFilter)block
-                data:(CellData)dataBlock; {
+              filter:(ViewFilter)block
+              height:(HeightBlock)heightBlock
+                data:(ViewData)dataBlock; {
     
     NSString *randomIdentifier = [self randomString];
     
@@ -74,15 +77,32 @@ static NSString * const kNormalCell    = @"kNormalCell";
     
 }
 
+- (void)registerHeaderView:(Class <PSSReusableViewPotocol> )viewClass
+               onTableView:(UITableView *)tableView
+                    filter:(ViewFilter)block
+                    height:(HeightBlock)heightBlock
+                      data:(ViewData)dataBlock; {
+    
+}
+
+- (void)registerFooterView:(Class <PSSReusableViewPotocol> )viewClass
+               onTableView:(UITableView *)tableView
+                    filter:(ViewFilter)block
+                    height:(HeightBlock)heightBlock
+                      data:(ViewData)dataBlock; {
+    
+}
+
+
 #pragma mark - private
 
 - (UITableViewCell *)getCell:(NSString *)identifier form:(UITableView *)tableView indexPath:(NSIndexPath *)indexPath {
     
-    UITableViewCell <PSSTableViewCellProtocol> *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+    UITableViewCell <PSSReusableViewPotocol> *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
     
     if ([cell respondsToSelector:@selector(bindingData:)]) {
         
-        CellData block = self.cellDataDic[identifier];
+        ViewData block = self.cellDataDic[identifier];
         
         [cell bindingData:block(indexPath)];
         
@@ -141,7 +161,7 @@ static NSString * const kNormalCell    = @"kNormalCell";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    for (CellFilter block in self.cellFilterArray) {
+    for (ViewFilter block in self.cellFilterArray) {
         
         BOOL shouldReturnCell = block(indexPath);
         
@@ -166,6 +186,36 @@ static NSString * const kNormalCell    = @"kNormalCell";
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     [self.didSelectRowAtIndexPath sendNext:indexPath];
+    
+}
+
+- (nullable UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section; {
+    
+    return [[UIView alloc] init];
+    
+}
+
+- (nullable UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section; {
+    
+    return [[UIView alloc] init];
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath; {
+    
+    return 44;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section; {
+    
+    return MINFLOAT;
+    
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section; {
+    
+    return MINFLOAT;
     
 }
 
