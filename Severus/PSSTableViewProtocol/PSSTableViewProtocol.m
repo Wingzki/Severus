@@ -16,8 +16,9 @@ static NSString * const kNormalCell     = @"kNormalCell";
 @interface PSSTableViewProtocol ()
 
 @property (strong, nonatomic) NSMutableArray      *cellFilterArray;
-@property (strong, nonatomic) NSMutableDictionary *cellStyleDic;
+@property (strong, nonatomic) NSMutableDictionary *cellIdentifierDic;
 @property (strong, nonatomic) NSMutableDictionary *cellDataDic;
+@property (strong, nonatomic) NSMutableDictionary *cellHeightDic;
 
 @property (copy  , nonatomic) NumberOfRows numberOfRows;
 
@@ -34,9 +35,12 @@ static NSString * const kNormalCell     = @"kNormalCell";
     self = [super init];
     if (self) {
         
-        _cellFilterArray = [NSMutableArray array];
-        _cellStyleDic    = [NSMutableDictionary dictionary];
-        _cellDataDic     = [NSMutableDictionary dictionary];
+        _numberOfSections  = 1;
+        
+        _cellFilterArray   = [NSMutableArray array];
+        _cellIdentifierDic = [NSMutableDictionary dictionary];
+        _cellDataDic       = [NSMutableDictionary dictionary];
+        _cellHeightDic     = [NSMutableDictionary dictionary];
         
         _didSelectRowAtIndexPath = [RACSubject subject];
         
@@ -56,7 +60,7 @@ static NSString * const kNormalCell     = @"kNormalCell";
 
 - (void)registerCell:(Class <PSSReusableViewPotocol> )cellClass
          onTableView:(UITableView *)tableView
-              filter:(ViewFilter)block
+              filter:(ViewFilter)filterBlock
               height:(HeightBlock)heightBlock
                 data:(ViewData)dataBlock; {
     
@@ -71,9 +75,10 @@ static NSString * const kNormalCell     = @"kNormalCell";
     [tableView registerClass:cellClass forCellReuseIdentifier:randomIdentifier];
     [tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kNormalCell];
     
-    [self.cellFilterArray addObject:[block copy]];
-    [self.cellStyleDic setObject:randomIdentifier forKey:block];
+    [self.cellFilterArray addObject:[filterBlock copy]];
+    [self.cellIdentifierDic setObject:randomIdentifier forKey:filterBlock];
     [self.cellDataDic setObject:[dataBlock copy] forKey:randomIdentifier];
+    [self.cellHeightDic setObject:[heightBlock copy] forKey:randomIdentifier];
     
 }
 
@@ -93,6 +98,11 @@ static NSString * const kNormalCell     = @"kNormalCell";
     
 }
 
+#pragma mark - shouldOverWrite
+
+- (void)cellWillReturned:(UITableViewCell *)cell indexPath:(NSIndexPath *)indexPath {
+    
+}
 
 #pragma mark - private
 
@@ -104,7 +114,11 @@ static NSString * const kNormalCell     = @"kNormalCell";
         
         ViewData block = self.cellDataDic[identifier];
         
-        [cell bindingData:block(indexPath)];
+        if (block) {
+            
+            [cell bindingData:block(indexPath)];
+            
+        }
         
     }
     
@@ -127,7 +141,7 @@ static NSString * const kNormalCell     = @"kNormalCell";
 
 - (BOOL)isIdentifierExist:(NSString *)identifier {
     
-    for (NSString *temp in [self.cellStyleDic allValues]) {
+    for (NSString *temp in [self.cellIdentifierDic allValues]) {
         
         if ([temp isEqualToString:identifier]) {
             return  YES;
@@ -136,6 +150,24 @@ static NSString * const kNormalCell     = @"kNormalCell";
     }
     
     return NO;
+    
+}
+
+- (NSString *)identifierWithIndexPath:(NSIndexPath *)indexPath {
+    
+    for (ViewFilter block in self.cellFilterArray) {
+        
+        BOOL shouldReturnCell = block(indexPath);
+        
+        if (shouldReturnCell) {
+            
+            return [self.cellIdentifierDic objectForKey:block];
+            
+        }
+        
+    }
+    
+    return nil;
     
 }
 
@@ -155,27 +187,31 @@ static NSString * const kNormalCell     = @"kNormalCell";
         
     }
     
+    NSLog(@"NumberOfRowsInSection do not be registered : %@", @(section));
+    
     return 0;
     
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    for (ViewFilter block in self.cellFilterArray) {
+    NSString *identifier = [self identifierWithIndexPath:indexPath];
+    
+    UITableViewCell *cell;
+    
+    if (identifier) {
         
-        BOOL shouldReturnCell = block(indexPath);
+        cell = [self getCell:identifier form:tableView indexPath:indexPath];
         
-        if (shouldReturnCell) {
-            
-            return [self getCell:[self.cellStyleDic objectForKey:block]
-                            form:tableView
-                       indexPath:indexPath];
-            
-        }
+    }else {
+        
+        cell = [tableView dequeueReusableCellWithIdentifier:kNormalCell];
         
     }
     
-    return [tableView dequeueReusableCellWithIdentifier:kNormalCell];
+    [self cellWillReturned:cell indexPath:indexPath];
+    
+    return cell;
     
 }
 
@@ -202,6 +238,16 @@ static NSString * const kNormalCell     = @"kNormalCell";
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath; {
+    
+    NSString *identifier = [self identifierWithIndexPath:indexPath];
+    
+    HeightBlock block = self.cellHeightDic[identifier];
+    
+    if (block) {
+        
+        return block(indexPath);
+        
+    }
     
     return 44;
     

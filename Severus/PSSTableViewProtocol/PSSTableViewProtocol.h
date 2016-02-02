@@ -49,7 +49,7 @@ typedef id(^ViewData)(NSIndexPath *indexPath);
  */
 - (void)registerCell:(Class <PSSReusableViewPotocol> )cellClass
          onTableView:(UITableView *)tableView
-              filter:(ViewFilter)block
+              filter:(ViewFilter)filterBlock
               height:(HeightBlock)heightBlock
                 data:(ViewData)dataBlock;
 
